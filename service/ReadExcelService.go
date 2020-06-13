@@ -51,9 +51,6 @@ func readexcl(filename string) []model.Job {
 	return jobs
 }
 
-func ReadExlAndSave(filename string) {
-
-}
 
 //读取dir目录下的文件并返回数组切片
 func traverseDir(dir string) []os.FileInfo {
