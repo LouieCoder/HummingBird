@@ -1,9 +1,6 @@
 package model
 
-import "github.com/jinzhu/gorm"
-
 type Job struct {
-	gorm.Model
 	Department_name                    string
 	Job_title                          string
 	Department_id                      int64

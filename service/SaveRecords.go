@@ -1,14 +1,45 @@
 package service
 
 import (
+	"HummingBird/dao"
+	"HummingBird/model"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"io/ioutil"
 	"log"
 	"os"
-	"HummingBird/model"
 	"strconv"
-	"time"
 )
+
+func SaveExcelFromFile(filename string) {
+	//创建表结构
+	dao.CreateTable(model.Job{})
+
+	jobs := readexcl(filename)
+	for _, job := range jobs {
+		dao.AddRecord(&job)
+	}
+}
+
+func SaveExcelFormDir(dir string) {
+	//创建表结构
+	dao.CreateTable(model.Job{})
+	//提取目录中的文件名
+	excelFilesName := traverseDir(dir)
+
+	for _, ef := range excelFilesName {
+
+		go func(filename string) {
+			jobs := readexcl("exl/"+filename)
+			log.Printf("已读取文件%s",filename)
+
+			for _, job := range jobs {
+				log.Printf("写入来自%s 的记录 %s",filename,job.Job_title)
+				go dao.AddRecord(&job)
+			}
+		}(ef.Name())
+
+	}
+}
 
 //读传入的excel文件并返回数组切片
 func readexcl(filename string) []model.Job {
@@ -20,11 +51,11 @@ func readexcl(filename string) []model.Job {
 	jobs := make([]model.Job, 0, 1024)
 
 	rows, err := f.GetRows("Sheet1")
+	//第一行忽略
 	rows = rows[1:]
+
 	for _, row := range rows {
 		job := new(model.Job)
-		job.CreatedAt = time.Now()
-		job.UpdatedAt = time.Now()
 
 		job.Department_name = row[0]
 		job.Job_title = row[1]
@@ -51,7 +82,6 @@ func readexcl(filename string) []model.Job {
 	return jobs
 }
 
-
 //读取dir目录下的文件并返回数组切片
 func traverseDir(dir string) []os.FileInfo {
 	files, err := ioutil.ReadDir(dir)
@@ -59,12 +89,12 @@ func traverseDir(dir string) []os.FileInfo {
 		panic("readDir wrong!")
 	}
 
-	files_return := make([]os.FileInfo,0)
+	files_return := make([]os.FileInfo, 0)
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		} else {
-			files_return = append(files_return,file)
+			files_return = append(files_return, file)
 		}
 	}
 

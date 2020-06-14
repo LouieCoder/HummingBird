@@ -17,7 +17,7 @@ func init() {
 		return
 	}
 	//DB.DB().SetMaxIdleConns(5)
-	//DB.DB().SetMaxOpenConns(10)
+	DB.DB().SetMaxOpenConns(20)
 }
 
 func GetConn() *gorm.DB {
@@ -26,16 +26,16 @@ func GetConn() *gorm.DB {
 /*
 传入结构体,按照该结构创建表
  */
-func CreateTable(i interface{}) {
-	if !DB.HasTable(i) {
-		DB.CreateTable(i)
+func CreateTable(model interface{}) {
+	if !DB.HasTable(model) {
+		DB.CreateTable(model)
 	}
 }
 /*
-创建一行记录
+根据传入参数record(指针类型)创建一行记录
  */
-func AddRecord(i interface{}){
-	DB.Create(i)
+func AddRecord(record interface{}){
+	DB.Create(record)
 }
 func DestoryConn()  {
 	DB.Close()
