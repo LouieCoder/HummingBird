@@ -30,9 +30,8 @@ func GetConn() *gorm.DB {
 func CreateTable(model interface{}) {
 	if DB.HasTable(model) {
 		DB.DropTable(model)
-	} else {
-		DB.CreateTable(model)
 	}
+	DB.CreateTable(model)
 }
 
 /*

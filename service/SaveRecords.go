@@ -29,17 +29,33 @@ func SaveExcelFormDir(dir string) {
 
 	for _, ef := range excelFilesName {
 
-		go func(filename string) {
-			plasticines := readexcl(dir + filename)
+		//go func(filename string) {
+		//	plasticines := readexcl(dir + filename)
+		//
+		//	log.Printf("已读取文件%s", filename)
+		//
+		//	for _, plasticine := range plasticines {
+		//		log.Printf("写入来自%s 的记录 %s", filename, plasticine.A)
+		//		go dao.AddRecord(&plasticine)
+		//	}
+		//}(ef.Name())
+		saveFileFromFile("exl/" + ef.Name())
 
-			log.Printf("已读取文件%s", filename)
+	}
+}
 
-			for _, plasticine := range plasticines {
-				log.Printf("写入来自%s 的记录 %s", filename, plasticine.A)
-				go dao.AddRecord(&plasticine)
-			}
-		}(ef.Name())
+func saveFileFromFile(filename string) {
+	plasticines := readexcl(filename)
 
+	log.Printf("已读取文件%s", filename)
+	//错误写法 plasticine在整个循环过程中只存在一个副本
+	//for _, plasticine := range plasticines {
+	//	log.Printf("写入来自%s 的记录 %s", filename, plasticine.A)
+	//	go dao.AddRecord(&plasticine)
+	//}
+	for i := 0; i < len(plasticines); i++ {
+		log.Printf("写入来自%s 的记录 %s", filename, plasticines[i].A)
+		go dao.AddRecord(&plasticines[i])
 	}
 }
 
@@ -51,7 +67,7 @@ func readexcl(filename string) []model.Plasticine {
 	}
 
 	//jobs := make([]model.Job, 0, 1024)
-	plasticines := make([]model.Plasticine,0,1024)
+	plasticines := make([]model.Plasticine, 0, 1024)
 
 	rows, err := f.GetRows("Sheet1")
 	//拿到excel表格的每一列的列名
@@ -85,10 +101,10 @@ func readexcl(filename string) []model.Plasticine {
 
 		var plasticine model.Plasticine
 		val := reflect.ValueOf(&plasticine)
-		for i,v := range row {
-			val.Elem().FieldByName(string(65+i)).SetString(v)
+		for i, v := range row {
+			val.Elem().FieldByName(string(65 + i)).SetString(v)
 		}
-		plasticines = append(plasticines,plasticine)
+		plasticines = append(plasticines, plasticine)
 	}
 
 	//return jobs

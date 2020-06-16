@@ -11,7 +11,7 @@ type Plasticine struct {
 	H string
 	I string
 	J string
-	K string
+	K string `gorm:"type:varchar(500)"`
 	L string
 	M string
 	N string
@@ -28,6 +28,8 @@ type Plasticine struct {
 	Y string
 	Z string
 }
+
+var ColumnNameMaping []string
 
 func (p Plasticine)TableName() string {
 	return "plasticine"
