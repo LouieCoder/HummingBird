@@ -23,20 +23,24 @@ func init() {
 func GetConn() *gorm.DB {
 	return DB
 }
+
 /*
 传入结构体,按照该结构创建表
- */
+*/
 func CreateTable(model interface{}) {
-	if !DB.HasTable(model) {
+	if DB.HasTable(model) {
+		DB.DropTable(model)
+	} else {
 		DB.CreateTable(model)
 	}
 }
+
 /*
 根据传入参数record(指针类型)创建一行记录
- */
-func AddRecord(record interface{}){
+*/
+func AddRecord(record interface{}) {
 	DB.Create(record)
 }
-func DestoryConn()  {
+func DestoryConn() {
 	DB.Close()
 }
