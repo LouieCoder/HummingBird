@@ -1,6 +1,7 @@
 package model
 
 type Plasticine struct {
+	Id int64 `gorm:"primary_key"`
 	A string
 	B string
 	C string

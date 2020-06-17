@@ -18,11 +18,11 @@ func SaveExcelFormDir(dir string) {
 	excelFilesName := traverseDir(dir)
 
 	for _, ef := range excelFilesName {
-		saveFileFromFile("exl/" + ef.Name())
+		go saveFileFromExcel("exl/" + ef.Name())
 	}
 }
 
-func saveFileFromFile(filename string) {
+func saveFileFromExcel(filename string) {
 	plasticines := readexcl(filename)
 
 	log.Printf("已读取文件%s", filename)
@@ -54,6 +54,7 @@ func readexcl(filename string) []model.Plasticine {
 
 	for _, row := range rows {
 		var plasticine model.Plasticine
+		plasticine.Id = GenerateID()
 		val := reflect.ValueOf(&plasticine)
 		for i, v := range row {
 			val.Elem().FieldByName(string(65 + i)).SetString(v)
